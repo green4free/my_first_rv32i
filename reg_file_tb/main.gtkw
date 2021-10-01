@@ -1,0 +1,73 @@
+[*]
+[*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
+[*] Thu Sep 30 22:53:25 2021
+[*]
+[dumpfile] "/home/magnus/Documents/developer/hdl/my_first_rv32i/reg_file_tb/reg_file_wrapper.vcd"
+[dumpfile_mtime] "Thu Sep 30 22:39:38 2021"
+[dumpfile_size] 4228788
+[savefile] "/home/magnus/Documents/developer/hdl/my_first_rv32i/reg_file_tb/main.gtkw"
+[timestart] 10160070
+[size] 1920 992
+[pos] -13 -63
+*-14.000000 10220000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] reg_file_wrapper.
+[sst_width] 237
+[signals_width] 291
+[sst_expanded] 1
+[sst_vpaned_height] 545
+@28
+reg_file_wrapper.real_DUT.rst_n
+reg_file_wrapper.clk_h
+reg_file_wrapper.real_DUT.step
+reg_file_wrapper.clk
+@24
+reg_file_wrapper.real_DUT.rd[4:0]
+reg_file_wrapper.real_DUT.rs1[4:0]
+reg_file_wrapper.real_DUT.rs2[4:0]
+reg_file_wrapper.real_DUT.rd_v[31:0]
+reg_file_wrapper.real_DUT.rs1_v[31:0]
+reg_file_wrapper.real_DUT.rs2_v[31:0]
+reg_file_wrapper.real_DUT.rd_intermediate[4:0]
+reg_file_wrapper.real_DUT.rd_v_intermediate[31:0]
+reg_file_wrapper.real_DUT.rs1_v_intermediate[31:0]
+reg_file_wrapper.real_DUT.rs2_intermediate[4:0]
+@28
+reg_file_wrapper.real_DUT.we
+reg_file_wrapper.real_DUT.we_intermediate
+@24
+reg_file_wrapper.real_DUT.r0[31:0]
+reg_file_wrapper.real_DUT.r1[31:0]
+reg_file_wrapper.real_DUT.r2[31:0]
+reg_file_wrapper.real_DUT.r3[31:0]
+reg_file_wrapper.real_DUT.r4[31:0]
+reg_file_wrapper.real_DUT.r5[31:0]
+reg_file_wrapper.real_DUT.r6[31:0]
+reg_file_wrapper.real_DUT.r7[31:0]
+reg_file_wrapper.real_DUT.r8[31:0]
+reg_file_wrapper.real_DUT.r9[31:0]
+reg_file_wrapper.real_DUT.r10[31:0]
+reg_file_wrapper.real_DUT.r11[31:0]
+reg_file_wrapper.real_DUT.r12[31:0]
+reg_file_wrapper.real_DUT.r13[31:0]
+reg_file_wrapper.real_DUT.r14[31:0]
+reg_file_wrapper.real_DUT.r15[31:0]
+reg_file_wrapper.real_DUT.r16[31:0]
+reg_file_wrapper.real_DUT.r17[31:0]
+reg_file_wrapper.real_DUT.r18[31:0]
+reg_file_wrapper.real_DUT.r19[31:0]
+reg_file_wrapper.real_DUT.r20[31:0]
+reg_file_wrapper.real_DUT.r21[31:0]
+reg_file_wrapper.real_DUT.r22[31:0]
+reg_file_wrapper.real_DUT.r23[31:0]
+reg_file_wrapper.real_DUT.r24[31:0]
+reg_file_wrapper.real_DUT.r25[31:0]
+reg_file_wrapper.real_DUT.r26[31:0]
+reg_file_wrapper.real_DUT.r27[31:0]
+reg_file_wrapper.real_DUT.r28[31:0]
+@25
+reg_file_wrapper.real_DUT.r29[31:0]
+@24
+reg_file_wrapper.real_DUT.r30[31:0]
+reg_file_wrapper.real_DUT.r31[31:0]
+[pattern_trace] 1
+[pattern_trace] 0
