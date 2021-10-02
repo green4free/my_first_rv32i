@@ -5,13 +5,13 @@ import random
 
 
 def reg_file_model_generator():
-    register = [0 for _ in range(32)]
+    register = [0 for _ in range(31)]
     def reg_file_model(rs1, rs2, rd, rd_v, we):
         nonlocal register
-        rs1_v = register[rs1]
-        rs2_v = register[rs2]
-        if we:
-            register[rd] = rd_v
+        rs1_v = 0 if rs1 == 0 else register[rs1-1]
+        rs2_v = 0 if rs2 == 0 else register[rs2-1]
+        if we and rd != 0:
+            register[rd-1] = rd_v
         return rs1_v, rs2_v
     return reg_file_model
 

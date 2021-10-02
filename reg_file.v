@@ -24,7 +24,7 @@ module reg_file(
     input wire        we;
 
 
-    reg [31:0] registers [31:0];
+    reg [31:0] registers [31:1];
     reg [31:0] rs1_v_intermediate = 32'h00000000;
     reg [4:0]  rs2_intermediate = 5'd0;
     reg step = 1'b1;
@@ -50,24 +50,24 @@ module reg_file(
         else
             step <= !step;
 
-    always @(posedge clk) if (we_intermediate && step) registers[rd_intermediate] <= rd_v_intermediate;
+    always @(posedge clk) if (we_intermediate && step && |rd_intermediate) registers[rd_intermediate] <= rd_v_intermediate;
     
     
     wire [31:0] register_o = registers[(step) ? rs2_intermediate : rs1];
     
     always @(posedge clk) begin
         if (!step) begin
-            rs1_v_intermediate <= register_o;
+            rs1_v_intermediate <= (|rs1) ? register_o : 32'h00000000;
             rs2_intermediate <= rs2;
         end else begin
-            rs2_v <= register_o;
+            rs2_v <= (|rs2_intermediate) ? register_o : 32'h00000000;
             rs1_v <= rs1_v_intermediate;
         end
     end
 
     integer i;
     initial begin
-        for (i=0;i<32;i=i+1)
+        for (i=1;i<32;i=i+1)
             registers[i] = 32'h00000000;
     end
 
