@@ -1,0 +1,36 @@
+[*]
+[*] GTKWave Analyzer v3.3.86 (w)1999-2017 BSI
+[*] Sun Oct  3 19:25:51 2021
+[*]
+[dumpfile] "/home/magnus/Documents/developer/hdl/my_first_rv32i/alu_tb/alu.vcd"
+[dumpfile_mtime] "Sun Oct  3 19:12:01 2021"
+[dumpfile_size] 10349
+[savefile] "/home/magnus/Documents/developer/hdl/my_first_rv32i/alu_tb/main.gtkw"
+[timestart] 542840
+[size] 1920 992
+[pos] -1 -32
+*-11.000000 550000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 237
+[signals_width] 234
+[sst_expanded] 1
+[sst_vpaned_height] 277
+@29
+alu.funct3[2:0]
+@28
+alu.mod
+@24
+alu.result[31:0]
+@420
+alu.s_val1[31:0]
+alu.s_val2[31:0]
+@24
+alu.val1[31:0]
+alu.val2[31:0]
+@420
+alu.result[31:0]
+@28
+alu.val1[31:0]
+alu.val2[31:0]
+alu.result[31:0]
+[pattern_trace] 1
+[pattern_trace] 0
