@@ -1,8 +1,8 @@
+`timescale 1ns/1ps
 
 module reg_file(
     rst_n,
     clk,
-    //clk_h,
     rs1,
     rs2,
     rd,
@@ -14,7 +14,6 @@ module reg_file(
 
     input wire        rst_n;
     input wire        clk;
-    //input wire        clk_h;
     input wire [4:0]  rs1;
     input wire [4:0]  rs2;
     input wire [4:0]  rd; 
@@ -65,14 +64,13 @@ module reg_file(
         end
     end
 
+    `ifdef COCOTB_SIM
     integer i;
     initial begin
         for (i=1;i<32;i=i+1)
             registers[i] = 32'h00000000;
     end
 
-    `ifdef COCOTB_SIM
-    wire [31:0] r0 = registers[0];
     wire [31:0] r1 = registers[1];
     wire [31:0] r2 = registers[2];
     wire [31:0] r3 = registers[3];
