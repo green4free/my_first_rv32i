@@ -64,13 +64,13 @@ module reg_file(
         end
     end
 
-    `ifdef COCOTB_SIM
+    
     integer i;
     initial begin
         for (i=1;i<32;i=i+1)
             registers[i] = 32'h00000000;
     end
-
+    `ifdef COCOTB_SIM
     wire [31:0] r1 = registers[1];
     wire [31:0] r2 = registers[2];
     wire [31:0] r3 = registers[3];
