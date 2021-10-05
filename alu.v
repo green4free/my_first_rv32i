@@ -13,11 +13,13 @@
 module alu (
     funct3,
     mod,
+    immediate,
     val1,
     val2,
     result
 );
     input wire mod;
+    input wire immediate;
     input wire [2:0]  funct3;
     input wire [31:0] val1, val2;
     output reg [31:0] result;
@@ -27,7 +29,7 @@ module alu (
 
     always @(funct3, mod, val1, val2)
         if (funct3 == `ADD)
-            result <= val1 + ((mod) ? (~val2) + 1 : val2);
+            result <= val1 + ((mod && !immediate) ? (~val2) + 1 : val2);
         else if (funct3 == `SLL)
             result <= val1 << val2[4:0];
         else if (funct3 == `SLT)

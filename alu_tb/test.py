@@ -13,6 +13,7 @@ import random
 #Verified by cheking waveforms manually for now.. Might create an automatic testbench later
 @cocotb.test()
 async def alu_randomised_test(dut):
+    dut.immediate.value = 0;
     for i in range(64):
         dut.funct3.value = i % 8
         dut.mod.value = (i >> 3) % 2
