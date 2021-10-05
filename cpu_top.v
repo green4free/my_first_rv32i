@@ -2,6 +2,21 @@
 
 `include "decoder.vh"
 
+`define init_pipe(name) \
+    wire s1_``name; \
+    reg  s2_``name = 0; \
+    reg  s3_``name = 0
+
+`define stage_pipe(name) \
+    always @(posedge p_clk, negedge rst_n) \
+        if (!rst_n) begin \
+            s2_``name <= 0; \
+            s3_``name <= 0; \
+        end else begin \
+            s2_``name <= s1_``name; \
+            s3_``name <= s2_``name; \
+        end
+
 module cpu (
     clk,
     rst_n
@@ -10,7 +25,6 @@ module cpu (
 
     input wire clk;
     input wire rst_n;
-
 
     // The reg file implementation requires a clock twice the speed of the pipeline clock,
     //  so we divide the input clock by two and use that for the pipeline.
@@ -50,38 +64,16 @@ module cpu (
         .instruction(instruction)
     );
 
-    wire s1_valid_op;
-    wire s1_ALU_OP;
-    wire s1_ALU_I_OP;
-    wire s1_LOAD_OP;
-    wire s1_STORE_OP;
-    wire s1_BRANCH_OP;
-    wire s1_LUI;
-    wire s1_AUIPC;
-    wire s1_JAL;
-    wire s1_JALR;
-
-    reg s2_valid_op = 0;
-    reg s2_ALU_OP = 0;
-    reg s2_ALU_I_OP = 0;
-    reg s2_LOAD_OP = 0;
-    reg s2_STORE_OP = 0;
-    reg s2_BRANCH_OP = 0;
-    reg s2_LUI = 0;
-    reg s2_AUIPC = 0;
-    reg s2_JAL = 0;
-    reg s2_JALR = 0;
-
-    reg s3_valid_op = 0;
-    reg s3_ALU_OP = 0;
-    reg s3_ALU_I_OP = 0;
-    reg s3_LOAD_OP = 0;
-    reg s3_STORE_OP = 0;
-    reg s3_BRANCH_OP = 0;
-    reg s3_LUI = 0;
-    reg s3_AUIPC = 0;
-    reg s3_JAL = 0;
-    reg s3_JALR = 0;
+    `init_pipe(valid_op);
+    `init_pipe(ALU_OP);
+    `init_pipe(ALU_I_OP);
+    `init_pipe(LOAD_OP);
+    `init_pipe(STORE_OP);
+    `init_pipe(BRANCH_OP);
+    `init_pipe(LUI);
+    `init_pipe(AUIPC);
+    `init_pipe(JAL);
+    `init_pipe(JALR);
 
     decoder control_signal_decoder(
         .instruction(instruction),
@@ -97,35 +89,9 @@ module cpu (
         .JALR(s1_JALR)
     );
 
+    wire [24:0] s1_stripped_instruction = instruction[31:7];
     reg [24:0] s2_stripped_instruction = 0;
     reg [24:0] s3_stripped_instruction = 0;
-
-    always @(posedge p_clk, negedge rst_n)
-        if (!rst_n) begin
-            s2_stripped_instruction <= 0;
-            s2_valid_op <= 0;
-            s2_ALU_OP <= 0;
-            s2_ALU_I_OP <= 0;
-            s2_LOAD_OP <= 0;
-            s2_STORE_OP <= 0;
-            s2_BRANCH_OP <= 0;
-            s2_LUI <= 0;
-            s2_AUIPC <= 0;
-            s2_JAL <= 0;
-            s2_JALR <= 0;            
-        end else begin
-            s2_stripped_instruction <= instruction[31:7];
-            s2_valid_op <= s1_valid_op;
-            s2_ALU_OP <= s1_ALU_OP;
-            s2_ALU_I_OP <= s1_ALU_I_OP;
-            s2_LOAD_OP <= s1_LOAD_OP;
-            s2_STORE_OP <= s1_STORE_OP;
-            s2_BRANCH_OP <= s1_BRANCH_OP;
-            s2_LUI <= s1_LUI;
-            s2_AUIPC <= s1_AUIPC;
-            s2_JAL <= s1_JAL;
-            s2_JALR <= s1_JALR;
-        end
 
     reg [31:0] s3_alu_result = 0;
     wire [31:0] load_result = 0;
@@ -175,45 +141,30 @@ module cpu (
         .result(alu_result)
     );
     
-    always @(posedge p_clk, negedge rst_n)
-        if (!rst_n) begin
-            s3_stripped_instruction <= 0;
-            s3_alu_result <= 0;
-            s3_valid_op <= 0;
-            s3_ALU_OP <= 0;
-            s3_ALU_I_OP <= 0;
-            s3_LOAD_OP <= 0;
-            s3_STORE_OP <= 0;
-            s3_BRANCH_OP <= 0;
-            s3_LUI <= 0;
-            s3_AUIPC <= 0;
-            s3_JAL <= 0;
-            s3_JALR <= 0;
-        end else begin
-            s3_alu_result <= alu_result;
-            s3_stripped_instruction <= s2_stripped_instruction;
-            s3_valid_op <= s2_valid_op;
-            s3_ALU_OP <= s2_ALU_OP;
-            s3_ALU_I_OP <= s2_ALU_I_OP;
-            s3_LOAD_OP <= s2_LOAD_OP;
-            s3_STORE_OP <= s2_STORE_OP;
-            s3_BRANCH_OP <= s2_BRANCH_OP;
-            s3_LUI <= s2_LUI;
-            s3_AUIPC <= s2_AUIPC;
-            s3_JAL <= s2_JAL;
-            s3_JALR <= s2_JALR;
-        end
+    `stage_pipe(stripped_instruction);
+    
+    `stage_pipe(valid_op);
+    `stage_pipe(ALU_OP);
+    `stage_pipe(ALU_I_OP);
+    `stage_pipe(LOAD_OP);
+    `stage_pipe(STORE_OP);
+    `stage_pipe(BRANCH_OP);
+    `stage_pipe(LUI);
+    `stage_pipe(AUIPC);
+    `stage_pipe(JAL);
+    `stage_pipe(JALR);
 
     always @(posedge p_clk, negedge rst_n)
         if (!rst_n) begin
             s4_rd_v <= 0;
             s4_rd <= 0;
             s4_valid_op <= 1'b0;
+            s3_alu_result <= 0;
         end else begin
             s4_rd_v <= s3_rd_v;
             s4_rd <= `RD(s3_stripped_instruction, 7);
             s4_valid_op <= s3_valid_op;
+            s3_alu_result <= alu_result;
         end
-
 
 endmodule
