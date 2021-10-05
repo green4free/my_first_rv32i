@@ -98,6 +98,8 @@ module cpu (
     );
 
     reg [24:0] s2_stripped_instruction = 0;
+    reg [24:0] s3_stripped_instruction = 0;
+
     always @(posedge p_clk, negedge rst_n)
         if (!rst_n) begin
             s2_stripped_instruction <= 0;
@@ -152,17 +154,27 @@ module cpu (
         .we(s3_valid_op && (s3_ALU_OP || s3_LUI || s3_AUIPC || s3_LOAD_OP) )
     );
 
+    reg [31:0] s4_rd_v = 0;
+    reg [4:0] s4_rd = 0;
+    reg s4_valid_op = 1'b0;
+
+    wire [31:0] alu_rs1_v = (`RS1(s2_stripped_instruction, 7) == `RD(s3_stripped_instruction, 7) && s3_valid_op) ? s3_rd_v :
+        ((`RS1(s2_stripped_instruction, 7) == s4_rd && s4_valid_op) ? s4_rd_v : s2_rs1_v);
+
+    wire [31:0] alu_rs2_v = (`RS2(s2_stripped_instruction, 7) == `RD(s3_stripped_instruction, 7) && s3_valid_op) ? s3_rd_v :
+        ((`RS2(s2_stripped_instruction, 7) == s4_rd && s4_valid_op) ? s4_rd_v : s2_rs2_v);
+
+    wire [31:0] alu_val2_i = (s2_ALU_I_OP) ? `I_IM(s2_stripped_instruction, 7) : alu_rs2_v;
     wire [31:0] alu_result;
     alu ALU(
         .funct3(`FUNCT3(s2_stripped_instruction, 7)),
         .mod(`FUNCT7_5(s2_stripped_instruction, 7)),
-        .val1(s2_rs1_v),
-        .val2( (s2_ALU_I_OP) ? `I_IM(s2_stripped_instruction, 7) : s2_rs2_v ),
+        .immediate(s2_ALU_I_OP),
+        .val1(alu_rs1_v),
+        .val2(alu_val2_i),
         .result(alu_result)
     );
-
     
-    reg [24:0] s3_stripped_instruction = 0;
     always @(posedge p_clk, negedge rst_n)
         if (!rst_n) begin
             s3_stripped_instruction <= 0;
@@ -190,6 +202,17 @@ module cpu (
             s3_AUIPC <= s2_AUIPC;
             s3_JAL <= s2_JAL;
             s3_JALR <= s2_JALR;
+        end
+
+    always @(posedge p_clk, negedge rst_n)
+        if (!rst_n) begin
+            s4_rd_v <= 0;
+            s4_rd <= 0;
+            s4_valid_op <= 1'b0;
+        end else begin
+            s4_rd_v <= s3_rd_v;
+            s4_rd <= `RD(s3_stripped_instruction, 7);
+            s4_valid_op <= s3_valid_op;
         end
 
 
