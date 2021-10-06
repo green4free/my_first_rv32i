@@ -23,6 +23,8 @@ module cpu (
 );
     parameter START_ADDR = 32'h00000000;
 
+    localparam NOP = 32'h00000013;
+
     input wire clk;
     input wire rst_n;
 
@@ -35,14 +37,18 @@ module cpu (
         if (!rst_n) p_clk <= 1'b0;
         else p_clk <= !p_clk;
     
-    
+    wire [31:0] alu_rs1_v;
+    wire [31:0] alu_rs2_v;
+
+
+    wire [31:0] next_instruction_addr;
     reg [31:0] PC [3:0];
     initial begin
         PC[0] = START_ADDR;
         PC[1] = 0;
         PC[2] = 0;
         PC[3] = 0;
-    end
+    end    
     always @(posedge p_clk, negedge rst_n)
         if (!rst_n) begin
             PC[0] <= START_ADDR;
@@ -50,7 +56,7 @@ module cpu (
             PC[2] <= 0;
             PC[3] <= 0;
         end else begin
-            PC[0] <= PC[0] + 4;
+            PC[0] <= next_instruction_addr;
             PC[1] <= PC[0];
             PC[2] <= PC[1];
             PC[3] <= PC[2];
@@ -105,9 +111,13 @@ module cpu (
             s3_rd_v <= `U_IM(s3_stripped_instruction, 7);
         else if (s3_AUIPC)
             s3_rd_v <= PC[3] + `U_IM(s3_stripped_instruction, 7);
+        else if (s3_JAL || s3_JALR)
+            s3_rd_v <= PC[3] + 4;
         else
             s3_rd_v <= load_result;
 
+    wire s3_we = s3_valid_op && (s3_ALU_OP || s3_LUI || s3_AUIPC || s3_JAL || s3_JALR || s3_LOAD_OP) && !((s4_JAL || s4_JALR) && s4_valid_op) && !(s5_JALR && s5_valid_op);
+    reg s4_we = 0;
     reg_file registers(
         .rst_n(rst_n),
         .clk(f_clk),
@@ -117,18 +127,24 @@ module cpu (
         .rs1_v(s2_rs1_v),
         .rs2_v(s2_rs2_v),
         .rd_v(s3_rd_v),
-        .we(s3_valid_op && (s3_ALU_OP || s3_LUI || s3_AUIPC || s3_LOAD_OP) )
+        .we(s3_we)
     );
 
+    assign next_instruction_addr = (s2_valid_op && s2_JALR) ? ((`I_IM(s2_stripped_instruction, 7)+alu_rs1_v)&32'hfffffffe) : ((s1_valid_op && s1_JAL) ? (`J_IM(s1_stripped_instruction, 7) + PC[1]) : (PC[0] + 4));
+
+    reg s4_JAL = 0;
+    reg s4_JALR = 0;
+    reg s5_JALR = 0;
     reg [31:0] s4_rd_v = 0;
     reg [4:0] s4_rd = 0;
     reg s4_valid_op = 1'b0;
+    reg s5_valid_op = 1'b0;
 
-    wire [31:0] alu_rs1_v = (`RS1(s2_stripped_instruction, 7) == `RD(s3_stripped_instruction, 7) && s3_valid_op) ? s3_rd_v :
-        ((`RS1(s2_stripped_instruction, 7) == s4_rd && s4_valid_op) ? s4_rd_v : s2_rs1_v);
+    assign alu_rs1_v = (`RS1(s2_stripped_instruction, 7) == `RD(s3_stripped_instruction, 7) && s3_we) ? s3_rd_v :
+        ((`RS1(s2_stripped_instruction, 7) == s4_rd && s4_we) ? s4_rd_v : s2_rs1_v);
 
-    wire [31:0] alu_rs2_v = (`RS2(s2_stripped_instruction, 7) == `RD(s3_stripped_instruction, 7) && s3_valid_op) ? s3_rd_v :
-        ((`RS2(s2_stripped_instruction, 7) == s4_rd && s4_valid_op) ? s4_rd_v : s2_rs2_v);
+    assign alu_rs2_v = (`RS2(s2_stripped_instruction, 7) == `RD(s3_stripped_instruction, 7) && s3_we) ? s3_rd_v :
+        ((`RS2(s2_stripped_instruction, 7) == s4_rd && s4_we) ? s4_rd_v : s2_rs2_v);
 
     wire [31:0] alu_val2_i = (s2_ALU_I_OP) ? `I_IM(s2_stripped_instruction, 7) : alu_rs2_v;
     wire [31:0] alu_result;
@@ -159,12 +175,22 @@ module cpu (
             s4_rd_v <= 0;
             s4_rd <= 0;
             s4_valid_op <= 1'b0;
+            s5_valid_op <= 1'b0;
             s3_alu_result <= 0;
+            s4_JAL <= 0;
+            s4_JALR <= 0;
+            s5_JALR <= 0;
+            s4_we <= 0;
         end else begin
             s4_rd_v <= s3_rd_v;
             s4_rd <= `RD(s3_stripped_instruction, 7);
             s4_valid_op <= s3_valid_op;
+            s5_valid_op <= s4_valid_op;
             s3_alu_result <= alu_result;
+            s4_JAL <= s3_JAL;
+            s4_JALR <= s3_JALR;
+            s5_JALR <= s4_JALR;
+            s4_we <= s3_we;
         end
 
 endmodule
