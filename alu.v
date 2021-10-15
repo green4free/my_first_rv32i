@@ -27,28 +27,18 @@ module alu (
     wire signed [31:0] s_val1 = $signed(val1);
     wire signed [31:0] s_val2 = $signed(val2);
 
-    always @(funct3, mod, val1, val2)
-        if (funct3 == `ADD)
-            result <= val1 + ((mod && !immediate) ? (~val2) + 1 : val2);
-        else if (funct3 == `SLL)
-            result <= val1 << val2[4:0];
-        else if (funct3 == `SLT)
-            result <= (s_val1 < s_val2) ? 32'h00000001 : 32'h00000000;
-        else if (funct3 == `SLTU)
-            result <= (val1 < val2) ? 32'h00000001 : 32'h00000000;
-        else if (funct3 == `XOR)
-            result <= val1 ^ val2;
-        else if (funct3 == `SRL)
-            if (mod)
-                result <= $unsigned(s_val1 >>> val2[4:0]);
-            else
-                result <= val1 >> val2[4:0];
-        else if (funct3 == `OR)
-            result <= val1 | val2;
-        else if (funct3 == `AND)
-            result <= val1 & val2;
-        else
-            result <= 32'h00000000;
+    always @(*)
+        case (funct3)
+            `ADD:  result <= val1 + ((mod && !immediate) ? (~val2) + 1 : val2);
+            `SLL:  result <= val1 << val2[4:0];
+            `SLT:  result <= (s_val1 < s_val2) ? 32'h00000001 : 32'h00000000;
+            `SLTU: result <= (val1 < val2) ? 32'h00000001 : 32'h00000000;
+            `XOR:  result <= val1 ^ val2;
+            `SRL:  result <= (mod) ? $unsigned(s_val1 >>> val2[4:0]) : (val1 >> val2[4:0]);
+            `OR:   result <= val1 | val2;
+            `AND:  result <= val1 & val2;
+            default: result <= 32'h00000000;
+        endcase           
         
     `ifdef COCOTB_SIM
     initial begin

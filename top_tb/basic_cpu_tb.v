@@ -42,16 +42,23 @@ module basic_cpu_tb();
         //DUT.I_mem.ROM[6] = 32'd2097744147;
         //DUT.I_mem.ROM[7] = 32'd2097744147;
 
-        DUT.I_mem.ROM[0] = 32'd20971759;
-        DUT.I_mem.ROM[1] = 32'd4290805907;
-        DUT.I_mem.ROM[2] = 32'd4290805907;
-        DUT.I_mem.ROM[3] = 32'd4290805907;
-        DUT.I_mem.ROM[4] = 32'd4290805907;
-        DUT.I_mem.ROM[5] = 32'd32999;
-        DUT.I_mem.ROM[6] = 32'd4271894767;
-        DUT.I_mem.ROM[7] = 32'd1640723;
+        //DUT.I_mem.ROM[0] = 32'd20971759;
+        //DUT.I_mem.ROM[1] = 32'd4290805907;
+        //DUT.I_mem.ROM[2] = 32'd4290805907;
+        //DUT.I_mem.ROM[3] = 32'd4290805907;
+        //DUT.I_mem.ROM[4] = 32'd4290805907;
+        //DUT.I_mem.ROM[5] = 32'd32999;
+        //DUT.I_mem.ROM[6] = 32'd4271894767;
+        //DUT.I_mem.ROM[7] = 32'd1640723;
 
-
+        DUT.I_mem.ROM[0] = 32'd20971667;
+        DUT.I_mem.ROM[1] = 32'd1048851;
+        DUT.I_mem.ROM[2] = 32'd1075871923;
+        DUT.I_mem.ROM[3] = 32'd1147283;
+        DUT.I_mem.ROM[4] = 32'd4262481123;
+        DUT.I_mem.ROM[5] = 32'd4275143059;
+        DUT.I_mem.ROM[6] = 32'd4271894639;
+        
     end
 
 
